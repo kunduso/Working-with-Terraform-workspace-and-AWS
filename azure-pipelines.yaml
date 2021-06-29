@@ -6,7 +6,7 @@ variables:
 trigger:
   branches:
     include:
-    - main
+    - add-build
   
 stages:
   - stage: Validate
