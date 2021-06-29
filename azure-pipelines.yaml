@@ -3,12 +3,12 @@ variables:
   - name: region
     value: 'us-east-2'
   
-  trigger:
-    branches:
-      include:
-      - main
+trigger:
+  branches:
+    include:
+    - main
   
-  stages:
+stages:
   - stage: Validate
     displayName: Validate
     jobs:
@@ -20,3 +20,10 @@ variables:
         displayName: Install Terraform
         inputs:
           terraformVersion: '0.14.8'
+      
+      
+      
+      
+      
+      
+      
