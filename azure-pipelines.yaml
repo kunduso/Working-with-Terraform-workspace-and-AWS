@@ -24,5 +24,5 @@ stages:
       # Init
       - powershell: |
         terraform init -backend-config="bucket=terraform-project4" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color
-          workingDirectory: $(build.sourcesdirectory)
-          displayName: 'terraform init'
+          workingDirectory:'$(build.sourcesdirectory)'
+          displayName:'terraform init'
