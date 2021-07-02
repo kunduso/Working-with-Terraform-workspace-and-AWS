@@ -25,5 +25,5 @@ stages:
       - task: PowerShell@2
         inputs:
           filePath: 'ListWorkspace.ps1'
-          arguments: '-CommaSeparatedListofWorkspaces "default"'
+          arguments: '-CommaSeparatedListofWorkspaces "$(CommaSeparatedListofWorkspaces)"'
         displayName: Terraform validate
