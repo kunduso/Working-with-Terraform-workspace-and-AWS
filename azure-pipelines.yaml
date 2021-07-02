@@ -21,3 +21,7 @@ stages:
           targetType: 'inline'
           script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
           workingDirectory: '$(build.sourcesdirectory)'
+      - task: PowerShell@2
+        inputs:
+          filePath: 'ListWorkspace.ps1'
+          arguments: '-CommaSeparatedListofWorkspaces "default"'
