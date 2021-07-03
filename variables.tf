@@ -16,7 +16,7 @@ variable "vpc_address_space" {
 variable "provider_env_roles" {
   type = map(any)
   default = {
-    "Dev"  = "arn:aws:iam::$(Replace-With-Dev-Account-ID):role/$(Role-Name-in-Dev-Account)"
+    "Dev"  = "arn:aws:iam::851242103510:role/RoleToBeAssumed"
     "Test" = "arn:aws:iam::$(Replace-With-Test-Account-ID):role/$(Role-Name-in-Test-Account)"
     "Prod" = "arn:aws:iam::$(Replace-With-Prod-Account-ID):role/$(Role-Name-in-Prod-Account)"
   }
