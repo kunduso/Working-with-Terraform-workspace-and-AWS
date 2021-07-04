@@ -2,6 +2,8 @@ variables:
   - group: ADO-TF-AWS-VPC-Int
   - name: region
     value: 'us-east-2'
+  - name: CommaSeparatedListofWorkspaces
+    value: "default, Dev"
   
 trigger:
   branches:
