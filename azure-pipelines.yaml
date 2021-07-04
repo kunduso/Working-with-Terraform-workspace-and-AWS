@@ -53,6 +53,9 @@ stages:
             script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: "Terraform plan"
+      - job: approve
+        displayName: Wait for approval
+        steps:
         - task: ManualValidation@0
           timeoutInMinutes: 15 # task times out in 1 day
           inputs:
