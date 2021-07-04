@@ -52,7 +52,10 @@ stages:
             targetType: 'inline'
             script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
-          displayName: "Terraform Plan"
+          displayName: "Terraform plan"
+        - task: ManualIntervention@8
+          inputs:
+            instructions: 'Review plan file'
   - stage: Test
     displayName: Test
     jobs:
