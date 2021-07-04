@@ -68,6 +68,7 @@ stages:
             instructions: 'Please validate the build configuration and resume'
             onTimeout: 'reject'
       - job: apply
+        dependsOn: approve
         pool:
           vmImage: ubuntu-latest
         displayName: Terraform apply
