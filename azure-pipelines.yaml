@@ -57,8 +57,7 @@ stages:
     displayName: Approve
     jobs:
       - job: approve
-        pool:
-          vmImage: ubuntu-latest
+        pool: server
         displayName: Wait for approval
         steps:
         - task: ManualValidation@0
