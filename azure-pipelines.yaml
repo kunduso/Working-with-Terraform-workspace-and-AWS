@@ -53,9 +53,9 @@ stages:
             script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: "Terraform plan"
-  - stage: Approve
-    displayName: Approve
-    jobs:
+  # - stage: Approve
+  #   displayName: Approve
+  #   jobs:
       - job: approve
         pool: server
         displayName: Wait for approval
