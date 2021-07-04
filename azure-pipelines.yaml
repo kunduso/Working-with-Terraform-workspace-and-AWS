@@ -23,17 +23,13 @@ stages:
           workingDirectory: '$(build.sourcesdirectory)'
         displayName: Terraform init
 
-    - job: validate
-      pool:
-        vmImage: ubuntu-latest
-      steps:
-        - task: PowerShell@2
-          inputs:
-            filePath: 'ListWorkspace.ps1'
-            arguments: '-CommaSeparatedListofWorkspaces "$(CommaSeparatedListofWorkspaces)"'
-          displayName: Terraform validate
+      - task: PowerShell@2
+        inputs:
+          filePath: 'ListWorkspace.ps1'
+          arguments: '-CommaSeparatedListofWorkspaces "$(CommaSeparatedListofWorkspaces)"'
+        displayName: Terraform validate
 
-  - stage: Plan
+  - stage: Dev
     displayName: Plan
     jobs:
       - job: plan
