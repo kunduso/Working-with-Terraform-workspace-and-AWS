@@ -59,8 +59,7 @@ stages:
         - task: ManualValidation@0
           timeoutInMinutes: 15 # task times out in 1 day
           inputs:
-            notifyUsers: |
-              test@test.com
+            notifyUsers: 
             instructions: 'Please validate the build configuration and resume'
             onTimeout: 'reject'
   - stage: Test
