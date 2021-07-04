@@ -12,7 +12,7 @@ stages:
   - stage: Validate
     displayName: Validate
     jobs:
-    - job: Terraform-init
+    - job: init
       pool:
         vmImage: ubuntu-latest
       steps:
@@ -23,7 +23,7 @@ stages:
           workingDirectory: '$(build.sourcesdirectory)'
         displayName: Terraform init
 
-    - job: Terraform-validate
+    - job: validate
       pool:
         vmImage: ubuntu-latest
       steps:
