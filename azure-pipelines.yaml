@@ -54,6 +54,8 @@ stages:
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: "Terraform plan"
       - job: approve
+        pool:
+          vmImage: ubuntu-latest
         displayName: Wait for approval
         steps:
         - task: ManualValidation@0
