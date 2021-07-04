@@ -34,6 +34,7 @@ stages:
       - job: plan
         pool:
           vmImage: ubuntu-latest
+        displayName: Terraform plan
         steps:
         - task: PowerShell@2
           inputs:
@@ -66,6 +67,29 @@ stages:
             notifyUsers: skundu.dev@gmail.com
             instructions: 'Please validate the build configuration and resume'
             onTimeout: 'reject'
+      - job: apply
+        pool:
+          vmImage: ubuntu-latest
+        displayName: Terraform apply
+        steps:
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            workingDirectory: '$(build.sourcesdirectory)'
+          displayName: Terraform init
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'terraform workspace select Dev -no-color'
+            workingDirectory: '$(build.sourcesdirectory)'
+          displayName: "Terraform workspace: Dev"
+        # - task: PowerShell@2
+        #   inputs:  
+        #     targetType: 'inline'
+        #     script: 'terraform apply -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
+        #     workingDirectory: '$(build.sourcesdirectory)'
+        #   displayName: "Terraform apply"
   - stage: Test
     displayName: Test
     jobs:
