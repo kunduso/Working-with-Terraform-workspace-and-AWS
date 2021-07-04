@@ -58,6 +58,7 @@ stages:
   #   displayName: Approve
   #   jobs:
       - job: approve
+        dependsOn: plan
         pool: server
         displayName: Wait for approval
         steps:
