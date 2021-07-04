@@ -12,27 +12,26 @@ stages:
   - stage: Validate
     displayName: Validate
     jobs:
-    - job: validate
+    - job: Terraform-init
       pool:
         vmImage: ubuntu-latest
       steps:
-      - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
-        inputs:
-        terraformVersion: '0.14.9'
-        displayName: Install Terraform
-
-
       - task: PowerShell@2
         inputs:
           targetType: 'inline'
           script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
           workingDirectory: '$(build.sourcesdirectory)'
         displayName: Terraform init
-      - task: PowerShell@2
-        inputs:
-          filePath: 'ListWorkspace.ps1'
-          arguments: '-CommaSeparatedListofWorkspaces "$(CommaSeparatedListofWorkspaces)"'
-        displayName: Terraform validate
+
+    - job: Terraform-validate
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+        - task: PowerShell@2
+          inputs:
+            filePath: 'ListWorkspace.ps1'
+            arguments: '-CommaSeparatedListofWorkspaces "$(CommaSeparatedListofWorkspaces)"'
+          displayName: Terraform validate
 
   - stage: Plan
     displayName: Plan
