@@ -18,7 +18,7 @@ variable "provider_env_roles" {
   default = {
     "Dev"  = "arn:aws:iam::851242103510:role/RoleToBeAssumed"
     "Test" = "arn:aws:iam::597445274477:role/RoleToBeAssumed"
-    "Prod" = "arn:aws:iam::$(Replace-With-Prod-Account-ID):role/$(Role-Name-in-Prod-Account)"
+    "Prod" = "arn:aws:iam::501461340471:role/RoleToBeAssumed"
   }
 }
 variable "subnet_address_space" {
