@@ -30,73 +30,68 @@ stages:
           filePath: 'ListWorkspace.ps1'
           arguments: '-CommaSeparatedListofWorkspaces "$(CommaSeparatedListofWorkspaces)"'
         displayName: Terraform validate
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(build.sourcesdirectory)'
-          ArtifactName: 'artifact'
-          publishLocation: 'Container'
 
-  # - stage: Dev
-  #   displayName: Dev
-  #   jobs:
-  #     - job: plan
-  #       pool:
-  #         vmImage: ubuntu-latest
-  #       displayName: Terraform plan
-  #       steps:
-  #       - task: PowerShell@2
-  #         inputs:
-  #           targetType: 'inline'
-  #           script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
-  #           workingDirectory: '$(build.sourcesdirectory)'
-  #         displayName: Terraform init
-  #       - task: PowerShell@2
-  #         inputs:
-  #           targetType: 'inline'
-  #           script: 'terraform workspace select Dev -no-color'
-  #           workingDirectory: '$(build.sourcesdirectory)'
-  #         displayName: "Terraform workspace: Dev"
-  #       - task: PowerShell@2
-  #         inputs:  
-  #           targetType: 'inline'
-  #           script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
-  #           workingDirectory: '$(build.sourcesdirectory)'
-  #         displayName: "Terraform plan"
-  #     - job: approve
-  #       dependsOn: plan
-  #       pool: server
-  #       displayName: Wait for approval
-  #       steps:
-  #       - task: ManualValidation@0
-  #         timeoutInMinutes: 15 # task times out in 1 day
-  #         inputs:
-  #           notifyUsers: skundu.dev@gmail.com
-  #           instructions: 'Please validate the build configuration and resume'
-  #           onTimeout: 'reject'
-  #     - job: apply
-  #       dependsOn: approve
-  #       pool:
-  #         vmImage: ubuntu-latest
-  #       displayName: Terraform apply
-  #       steps:
-  #       - task: PowerShell@2
-  #         inputs:
-  #           targetType: 'inline'
-  #           script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
-  #           workingDirectory: '$(build.sourcesdirectory)'
-  #         displayName: Terraform init
-  #       - task: PowerShell@2
-  #         inputs:
-  #           targetType: 'inline'
-  #           script: 'terraform workspace select Dev -no-color'
-  #           workingDirectory: '$(build.sourcesdirectory)'
-  #         displayName: "Terraform workspace: Dev"
-  #       # - task: PowerShell@2
-  #       #   inputs:  
-  #       #     targetType: 'inline'
-  #       #     script: 'terraform apply -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
-  #       #     workingDirectory: '$(build.sourcesdirectory)'
-  #       #   displayName: "Terraform apply"
+  - stage: Dev
+    displayName: Dev
+    jobs:
+      - job: plan
+        pool:
+          vmImage: ubuntu-latest
+        displayName: Terraform plan
+        steps:
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            workingDirectory: '$(build.sourcesdirectory)'
+          displayName: Terraform init
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'terraform workspace select Dev -no-color'
+            workingDirectory: '$(build.sourcesdirectory)'
+          displayName: "Terraform workspace: Dev"
+        - task: PowerShell@2
+          inputs:  
+            targetType: 'inline'
+            script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
+            workingDirectory: '$(build.sourcesdirectory)'
+          displayName: "Terraform plan"
+      - job: approve
+        dependsOn: plan
+        pool: server
+        displayName: Wait for approval
+        steps:
+        - task: ManualValidation@0
+          timeoutInMinutes: 15 # task times out in 1 day
+          inputs:
+            notifyUsers: skundu.dev@gmail.com
+            instructions: 'Please validate the build configuration and resume'
+            onTimeout: 'reject'
+      - job: apply
+        dependsOn: approve
+        pool:
+          vmImage: ubuntu-latest
+        displayName: Terraform apply
+        steps:
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            workingDirectory: '$(build.sourcesdirectory)'
+          displayName: Terraform init
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: 'terraform workspace select Dev -no-color'
+            workingDirectory: '$(build.sourcesdirectory)'
+          displayName: "Terraform workspace: Dev"
+        - task: PowerShell@2
+          inputs:  
+            targetType: 'inline'
+            script: 'terraform apply -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) --auto-approve -no-color'
+            workingDirectory: '$(build.sourcesdirectory)'
+          displayName: "Terraform apply"
   # - stage: Test
   #   displayName: Test
   #   jobs:
