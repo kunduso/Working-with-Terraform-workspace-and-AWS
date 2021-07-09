@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket         = "terraform-project4-vpc-peering"
+    bucket         = "skundu-terraform-remote-state-two"
     encrypt        = true
     key            = "tf/terraform.tfstate"
     region         = "us-east-2"
