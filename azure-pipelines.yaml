@@ -9,6 +9,8 @@ trigger:
   branches:
     include:
     - main
+    exclude:
+      - README.md
   
 stages:
   - stage: Validate
