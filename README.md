@@ -7,3 +7,4 @@ My objectives was to use Terraform to provision resources across environments in
 <br/>[1. CI/CD using Terraform and Azure Pipelines -ideation](http://skundunotes.com/2021/06/18/ci-cd-using-terraform-and-azure-pipelines-ideation/)
 <br/>[2. Terraform workspace with multiple AWS accounts](http://skundunotes.com/2021/06/19/terraform-workspace-with-multiple-aws-accounts/)
 <br/>[3. CI/CD of Terraform workspace with YAML based Azure Pipelines](https://skundunotes.com/2021/07/10/ci-cd-of-terraform-workspace-with-yaml-based-azure-pipelines/)
+<br />[4. YAML based Azure Pipeline approach for CI/CD of Terraform workspace](http://skundunotes.com/2021/07/18/yaml-based-azure-pipeline-approach-for-ci-cd-of-terraform-workspace/)
