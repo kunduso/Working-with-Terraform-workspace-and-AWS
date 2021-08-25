@@ -8,7 +8,7 @@ variables:
 trigger:
   branches:
     include:
-    - main
+    - add-checkov
     exclude:
       - README.md
   
@@ -24,7 +24,7 @@ stages:
       - task: PowerShell@2
         inputs:
           targetType: 'inline'
-          script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+          script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
           workingDirectory: '$(build.sourcesdirectory)'
         displayName: Terraform init
       - task: PowerShell@2

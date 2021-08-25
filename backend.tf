@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket         = "skundu-terraform-remote-state-two"
+    bucket         = "terraform-remote-bucket-skundu"
     encrypt        = true
-    key            = "tf/terraform.tfstate"
+    key            = "tf/terraform-workspace-poc/terraform.tfstate"
     region         = "us-east-2"
     dynamodb_table = "terraform-state-lock-table"
   }
