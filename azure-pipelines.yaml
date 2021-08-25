@@ -40,11 +40,12 @@ stages:
       - task: Bash@3
         inputs:
           targetType: 'inline'
-          script: 'checkov --directory $(build.sourcesdirectory) -o junitxml > $(build.sourcesdirectory)/scan-result.xml'
+          script: 'checkov --directory $(System.DefaultWorkingDirectory) -o junitxml > $(System.DefaultWorkingDirectory)/scan-result.xml'
         displayName: Checkov Scan
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
+          searchFolder: '$(System.DefaultWorkingDirectory)'
           testResultsFiles: '**/*scan-result.xml'
           mergeTestResults: false
           testRunTitle: Checkov Scan Report
