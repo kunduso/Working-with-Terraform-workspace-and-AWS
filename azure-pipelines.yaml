@@ -32,6 +32,24 @@ stages:
           filePath: 'ListWorkspace.ps1'
           arguments: '-CommaSeparatedListofWorkspaces "$(CommaSeparatedListofWorkspaces)"'
         displayName: Terraform validate
+      - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          script: 'pip install checkov'
+        displayName: Install checkov
+      - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          script: 'checkov --directory $(build.sourcesdirectory) -o junitxml > $(build.sourcesdirectory)/scan-result.xml'
+        displayName: Checkov Scan
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/*scan-result.xml'
+          mergeTestResults: false
+          testRunTitle: Checkov Scan Report
+          failTaskOnFailedTests: false
+          publishRunAttachments: true
 
   - stage: Dev
     displayName: Dev
@@ -44,7 +62,7 @@ stages:
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
-            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: Terraform init
         - task: PowerShell@2
@@ -79,7 +97,7 @@ stages:
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
-            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: Terraform init
         - task: PowerShell@2
@@ -105,7 +123,7 @@ stages:
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
-            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: Terraform init
         - task: PowerShell@2
@@ -140,7 +158,7 @@ stages:
           - task: PowerShell@2
             inputs:
               targetType: 'inline'
-              script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+              script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
               workingDirectory: '$(build.sourcesdirectory)'
             displayName: Terraform init
           - task: PowerShell@2
@@ -166,7 +184,7 @@ stages:
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
-            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: Terraform init
         - task: PowerShell@2
@@ -201,7 +219,7 @@ stages:
           - task: PowerShell@2
             inputs:
               targetType: 'inline'
-              script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+              script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
               workingDirectory: '$(build.sourcesdirectory)'
             displayName: Terraform init
           - task: PowerShell@2
