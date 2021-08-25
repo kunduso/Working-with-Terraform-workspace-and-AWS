@@ -37,11 +37,14 @@ stages:
           targetType: 'inline'
           script: 'pip install checkov'
         displayName: Install checkov
-      - task: Bash@3
-        inputs:
-          targetType: 'inline'
-          script: 'checkov --directory $(System.DefaultWorkingDirectory) -o junitxml > $(System.DefaultWorkingDirectory)/scan-result.xml'
-        displayName: Checkov Scan
+      - bash: checkov --directory $(System.DefaultWorkingDirectory) -o junitxml > $(System.DefaultWorkingDirectory)/scan-result.xml
+        displayName: 'Checkov Scan'
+        name: 'checkov_scan'
+      # - task: Bash@3
+      #   inputs:
+      #     targetType: 'inline'
+      #     script: 'checkov --directory $(System.DefaultWorkingDirectory) -o junitxml > $(System.DefaultWorkingDirectory)/scan-result.xml'
+      #   displayName: Checkov Scan
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
