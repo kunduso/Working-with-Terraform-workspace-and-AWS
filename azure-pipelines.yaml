@@ -44,7 +44,7 @@ stages:
         displayName: Terraform validate
 
       
-      - bash: checkov --directory $(System.DefaultWorkingDirectory) -o junitxml > $(System.DefaultWorkingDirectory)/scan-result.xml
+      - bash: checkov --directory $(System.DefaultWorkingDirectory)
         displayName: 'Checkov Scan'
         name: 'checkov_scan'
       # - task: Bash@3
