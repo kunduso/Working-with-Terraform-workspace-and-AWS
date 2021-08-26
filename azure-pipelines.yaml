@@ -91,8 +91,8 @@ stages:
             targetType: 'inline'
             workingDirectory: $(System.DefaultWorkingDirectory)            
             script: |
-                    terraform show -json main.tfplan > $(System.DefaultWorkingDirectory)/main.json
-                      checkov -f $(System.DefaultWorkingDirectory)/main.json -o junitxml > $(System.DefaultWorkingDirectory)/Checkov-Plan-Report.xml
+                    terraform show -json main.tfplan > main.json
+                      checkov -f main.json -o junitxml > Checkov-Plan-Report.xml
           continueOnError: true
           displayName: Checkov plan scan
         - task: PublishTestResults@2
