@@ -40,7 +40,8 @@ stages:
       - task: Bash@3
         inputs:
           targetType: 'inline'
-          script: 'checkov --directory $(System.DefaultWorkingDirectory) -o junitxml > $(System.DefaultWorkingDirectory)/scan-result.xml'
+          workingDirectory: $(System.DefaultWorkingDirectory)
+          script: 'checkov -d . -o junitxml > scan-result.xml'
         displayName: Checkov source code scan
         continueOnError: true
       - task: PublishTestResults@2
