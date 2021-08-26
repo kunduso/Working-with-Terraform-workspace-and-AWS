@@ -79,6 +79,28 @@ stages:
             script: 'terraform plan -var access_key=$(access_key) -var secret_key=$(secret_key) -out main.tfplan -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: "Terraform plan"
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'pip install checkov'
+          displayName: Install checkov
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(System.DefaultWorkingDirectory)            
+            script: |
+                    terraform show -json main.tfplan > $(System.DefaultWorkingDirectory)/main.json
+                      checkov -f $(System.DefaultWorkingDirectory)/main.json -o junitxml > $(System.DefaultWorkingDirectory)/Checkov-Plan-Report.xml
+          continueOnError: true
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            testResultsFiles: '**/*Checkov-Plan-Report.xml'
+            mergeTestResults: false
+            testRunTitle: Checkov Plan Scan Report
+            failTaskOnFailedTests: false
+            publishRunAttachments: true
       - job: approve
         dependsOn: plan
         pool: server
