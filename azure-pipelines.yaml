@@ -37,11 +37,6 @@ stages:
           filePath: 'ListWorkspace.ps1'
           arguments: '-CommaSeparatedListofWorkspaces "$(CommaSeparatedListofWorkspaces)"'
         displayName: Terraform validate
-
-      
-      # - bash: checkov --directory $(System.DefaultWorkingDirectory)
-      #   displayName: 'Checkov Scan'
-      #   name: 'checkov_scan'
       - task: Bash@3
         inputs:
           targetType: 'inline'
