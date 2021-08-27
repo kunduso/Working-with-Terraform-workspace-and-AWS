@@ -118,6 +118,7 @@ stages:
             onTimeout: 'reject'
       - job: apply
         dependsOn: approve
+        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool:
           vmImage: ubuntu-latest
         displayName: Terraform apply
@@ -179,6 +180,7 @@ stages:
               onTimeout: 'reject'
       - job: apply
         dependsOn: approve
+        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool:
             vmImage: ubuntu-latest
         displayName: Terraform apply
@@ -240,6 +242,7 @@ stages:
               onTimeout: 'reject'
       - job: apply
         dependsOn: approve
+        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool:
             vmImage: ubuntu-latest
         displayName: Terraform apply
