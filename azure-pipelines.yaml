@@ -164,9 +164,28 @@ stages:
         - task: PowerShell@2
           inputs:  
             targetType: 'inline'
-            script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
+            script: 'terraform plan -var access_key=$(access_key) -var secret_key=$(secret_key) -out main.tfplan -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: "Terraform plan"
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(System.DefaultWorkingDirectory)            
+            script: |
+                    terraform show -json main.tfplan > main.json
+                      checkov -f main.json -o junitxml > Checkov-Plan-Report.xml
+          continueOnError: true
+          displayName: Checkov plan scan
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            testResultsFiles: '**/*Checkov-Plan-Report.xml'
+            mergeTestResults: false
+            testRunTitle: Checkov Test workspace plan scan
+            failTaskOnFailedTests: false
+            publishRunAttachments: true
+          displayName: Publish Test Result
       - job: approve
         dependsOn: plan
         pool: server
@@ -226,9 +245,28 @@ stages:
         - task: PowerShell@2
           inputs:  
             targetType: 'inline'
-            script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
+            script: 'terraform plan -var access_key=$(access_key) -var secret_key=$(secret_key) -out main.tfplan -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: "Terraform plan"
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(System.DefaultWorkingDirectory)            
+            script: |
+                    terraform show -json main.tfplan > main.json
+                      checkov -f main.json -o junitxml > Checkov-Plan-Report.xml
+          continueOnError: true
+          displayName: Checkov plan scan
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            testResultsFiles: '**/*Checkov-Plan-Report.xml'
+            mergeTestResults: false
+            testRunTitle: Checkov Prod workspace plan scan
+            failTaskOnFailedTests: false
+            publishRunAttachments: true
+          displayName: Publish Test Result
       - job: approve
         dependsOn: plan
         pool: server
