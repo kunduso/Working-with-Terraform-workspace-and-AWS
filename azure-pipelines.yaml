@@ -149,6 +149,11 @@ stages:
           vmImage: ubuntu-latest
         displayName: Terraform plan
         steps:
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'pip install checkov'
+          displayName: Install checkov
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
@@ -230,6 +235,11 @@ stages:
           vmImage: ubuntu-latest
         displayName: Terraform plan
         steps:
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'pip install checkov'
+          displayName: Install checkov
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
