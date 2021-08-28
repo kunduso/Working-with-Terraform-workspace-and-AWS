@@ -24,14 +24,36 @@ stages:
       - task: PowerShell@2
         inputs:
           targetType: 'inline'
-          script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+          script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
           workingDirectory: '$(build.sourcesdirectory)'
         displayName: Terraform init
+      - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          script: 'pip install checkov'
+        displayName: Install checkov
       - task: PowerShell@2
         inputs:
           filePath: 'ListWorkspace.ps1'
           arguments: '-CommaSeparatedListofWorkspaces "$(CommaSeparatedListofWorkspaces)"'
         displayName: Terraform validate
+      - task: Bash@3
+        inputs:
+          targetType: 'inline'
+          workingDirectory: $(System.DefaultWorkingDirectory)
+          script: 'checkov -d . -o junitxml > scan-result.xml'
+        displayName: Checkov source code scan
+        continueOnError: true
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          searchFolder: '$(System.DefaultWorkingDirectory)'
+          testResultsFiles: '**/*scan-result.xml'
+          mergeTestResults: false
+          testRunTitle: Terraform source code scan
+          failTaskOnFailedTests: false
+          publishRunAttachments: true
+        displayName: Publish Test Result
 
   - stage: Dev
     displayName: Dev
@@ -41,10 +63,15 @@ stages:
           vmImage: ubuntu-latest
         displayName: Terraform plan
         steps:
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'pip install checkov'
+          displayName: Install checkov
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
-            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: Terraform init
         - task: PowerShell@2
@@ -56,16 +83,36 @@ stages:
         - task: PowerShell@2
           inputs:  
             targetType: 'inline'
-            script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
+            script: 'terraform plan -var access_key=$(access_key) -var secret_key=$(secret_key) -out main.tfplan -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: "Terraform plan"
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(System.DefaultWorkingDirectory)            
+            script: |
+                    terraform show -json main.tfplan > main.json
+                      checkov -f main.json -o junitxml > Checkov-Plan-Report.xml
+          continueOnError: true
+          displayName: Checkov plan scan
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            testResultsFiles: '**/*Checkov-Plan-Report.xml'
+            mergeTestResults: false
+            testRunTitle: Checkov Dev workspace plan scan
+            failTaskOnFailedTests: false
+            publishRunAttachments: true
+          displayName: Publish Test Result
       - job: approve
         dependsOn: plan
+        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool: server
         displayName: Wait for approval
         steps:
         - task: ManualValidation@0
-          timeoutInMinutes: 15 # task times out in 1 day
+          timeoutInMinutes: 15 # task times out in 15 mins
           inputs:
             notifyUsers: skundu.dev@gmail.com
             instructions: 'Please validate the build configuration and resume'
@@ -79,7 +126,7 @@ stages:
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
-            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: Terraform init
         - task: PowerShell@2
@@ -102,10 +149,15 @@ stages:
           vmImage: ubuntu-latest
         displayName: Terraform plan
         steps:
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'pip install checkov'
+          displayName: Install checkov
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
-            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: Terraform init
         - task: PowerShell@2
@@ -117,16 +169,36 @@ stages:
         - task: PowerShell@2
           inputs:  
             targetType: 'inline'
-            script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
+            script: 'terraform plan -var access_key=$(access_key) -var secret_key=$(secret_key) -out main.tfplan -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: "Terraform plan"
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(System.DefaultWorkingDirectory)            
+            script: |
+                    terraform show -json main.tfplan > main.json
+                      checkov -f main.json -o junitxml > Checkov-Plan-Report.xml
+          continueOnError: true
+          displayName: Checkov plan scan
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            testResultsFiles: '**/*Checkov-Plan-Report.xml'
+            mergeTestResults: false
+            testRunTitle: Checkov Test workspace plan scan
+            failTaskOnFailedTests: false
+            publishRunAttachments: true
+          displayName: Publish Test Result
       - job: approve
         dependsOn: plan
+        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool: server
         displayName: Wait for approval
         steps:
           - task: ManualValidation@0
-            timeoutInMinutes: 15 # task times out in 1 day
+            timeoutInMinutes: 15 # task times out in 15 mins
             inputs:
               notifyUsers: skundu.dev@gmail.com
               instructions: 'Please validate the build configuration and resume'
@@ -140,7 +212,7 @@ stages:
           - task: PowerShell@2
             inputs:
               targetType: 'inline'
-              script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+              script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
               workingDirectory: '$(build.sourcesdirectory)'
             displayName: Terraform init
           - task: PowerShell@2
@@ -163,10 +235,15 @@ stages:
           vmImage: ubuntu-latest
         displayName: Terraform plan
         steps:
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'pip install checkov'
+          displayName: Install checkov
         - task: PowerShell@2
           inputs:
             targetType: 'inline'
-            script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+            script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: Terraform init
         - task: PowerShell@2
@@ -178,16 +255,36 @@ stages:
         - task: PowerShell@2
           inputs:  
             targetType: 'inline'
-            script: 'terraform plan -var region=$(region) -var access_key=$(access_key) -var secret_key=$(secret_key) -no-color'
+            script: 'terraform plan -var access_key=$(access_key) -var secret_key=$(secret_key) -out main.tfplan -no-color'
             workingDirectory: '$(build.sourcesdirectory)'
           displayName: "Terraform plan"
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(System.DefaultWorkingDirectory)            
+            script: |
+                    terraform show -json main.tfplan > main.json
+                      checkov -f main.json -o junitxml > Checkov-Plan-Report.xml
+          continueOnError: true
+          displayName: Checkov plan scan
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            testResultsFiles: '**/*Checkov-Plan-Report.xml'
+            mergeTestResults: false
+            testRunTitle: Checkov Prod workspace plan scan
+            failTaskOnFailedTests: false
+            publishRunAttachments: true
+          displayName: Publish Test Result
       - job: approve
         dependsOn: plan
+        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool: server
         displayName: Wait for approval
         steps:
           - task: ManualValidation@0
-            timeoutInMinutes: 15 # task times out in 1 day
+            timeoutInMinutes: 15 # task times out in 15 mins
             inputs:
               notifyUsers: skundu.dev@gmail.com
               instructions: 'Please validate the build configuration and resume'
@@ -201,7 +298,7 @@ stages:
           - task: PowerShell@2
             inputs:
               targetType: 'inline'
-              script: 'terraform init -backend-config="bucket=skundu-terraform-remote-state-two" -backend-config="key=tf/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
+              script: 'terraform init -backend-config="bucket=terraform-remote-bucket-skundu" -backend-config="key=tf/terraform-workspace-poc/terraform.tfstate" -backend-config="region=$(region)" -backend-config="access_key=$(access_key)" -backend-config="secret_key=$(secret_key)" -no-color'
               workingDirectory: '$(build.sourcesdirectory)'
             displayName: Terraform init
           - task: PowerShell@2
