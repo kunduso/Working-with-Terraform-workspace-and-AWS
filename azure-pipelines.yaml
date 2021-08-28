@@ -107,6 +107,7 @@ stages:
           displayName: Publish Test Result
       - job: approve
         dependsOn: plan
+        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool: server
         displayName: Wait for approval
         steps:
@@ -118,7 +119,6 @@ stages:
             onTimeout: 'reject'
       - job: apply
         dependsOn: approve
-        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool:
           vmImage: ubuntu-latest
         displayName: Terraform apply
@@ -193,6 +193,7 @@ stages:
           displayName: Publish Test Result
       - job: approve
         dependsOn: plan
+        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool: server
         displayName: Wait for approval
         steps:
@@ -204,7 +205,6 @@ stages:
               onTimeout: 'reject'
       - job: apply
         dependsOn: approve
-        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool:
             vmImage: ubuntu-latest
         displayName: Terraform apply
@@ -279,6 +279,7 @@ stages:
           displayName: Publish Test Result
       - job: approve
         dependsOn: plan
+        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool: server
         displayName: Wait for approval
         steps:
@@ -290,7 +291,6 @@ stages:
               onTimeout: 'reject'
       - job: apply
         dependsOn: approve
-        condition: and (succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
         pool:
             vmImage: ubuntu-latest
         displayName: Terraform apply
